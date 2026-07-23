@@ -83,7 +83,13 @@ docker compose down
 
 ## CI/CD
 
-*À compléter à l'étape 4.*
+Le pipeline (détaillé dans `CI_CD_STRATEGIE.md`) s'exécute automatiquement à chaque `push` et `pull_request` :
+1. Installation des dépendances (`npm install`)
+2. Tests d'intégration (`npm test`)
+3. Build TypeScript (`npm run build`)
+4. Déploiement (build de l'image Docker), uniquement sur `main` et si les étapes précédentes ont réussi
+
+Les secrets (`JWT_SECRET`, `MONGODB_URI` de production) sont gérés via les secrets chiffrés de la plateforme CI, jamais commitées dans le dépôt.
 
 ## Sécurisation
 

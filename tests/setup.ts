@@ -30,13 +30,6 @@ beforeAll(async () => {
         dbName: 'visiplus_test',
         launchTimeout: 30000,
       },
-      binary: {
-        version: '7.0.0',
-        //skipMD5: true,
-      },
-      // Prevent auto-start issues and improve stability
-      //autoStart: true,
-      
     });
 
     // Wait a bit to ensure server is fully started

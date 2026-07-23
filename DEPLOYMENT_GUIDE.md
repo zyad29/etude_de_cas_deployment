@@ -1,7 +1,7 @@
-# Guide de déploiement -- Visiplus (Jaydee Kanban)
+# Guide de déploiement — Visiplus (Jaydee Kanban)
 
-> Document en cours de rédaction, complété au fil des étapes du projet.
-> État actuel : partie Docker (étape 3) rédigée. CI/CD (étape 4) et sécurité (étape 6) à ajouter.
+> Document complété au fil des étapes du projet.
+> Reste à ajouter : sécurisation (étape 6).
 
 ## Prérequis techniques
 
@@ -28,11 +28,43 @@ npm run dev
 ```
 Nécessite une instance MongoDB accessible localement (voir `MONGODB_URI` dans `.env`).
 
+## Commandes de test
+
+```bash
+npm test
+```
+Exécute l'ensemble des tests d'intégration (Vitest + Supertest) sur une instance MongoDB **en mémoire** (MongoDB Memory Server) : aucune base de données locale ou distante n'est nécessaire pour lancer les tests.
+
+Au tout premier lancement, le binaire MongoDB (~600 Mo) est téléchargé et mis en cache localement — ce qui peut prendre quelques minutes selon la connexion. Les lancements suivants réutilisent ce cache et sont rapides.
+
+```bash
+npm run test:coverage
+```
+Génère un rapport de couverture de code (formats texte, JSON et HTML).
+
+## Procédure de mise à jour
+
+Pour déployer une nouvelle version de l'application :
+
+1. Récupérer les derniers changements (`git pull`) et vérifier que les tests passent en local (`npm test`).
+2. Reconstruire l'image Docker avec les changements :
+   ```bash
+   docker compose up --build
+   ```
+   Le flag `--build` force la reconstruction de l'image (sinon Docker réutiliserait l'ancienne image en cache).
+3. Vérifier que le service répond correctement après redémarrage :
+   ```bash
+   curl http://localhost:3000/health
+   ```
+4. En cas de changement de schéma de données ou de variables d'environnement, mettre à jour le `.env` (ou les secrets CI/CD) **avant** de relancer le déploiement.
+
+En environnement avec pipeline CI/CD (voir `CI_CD_STRATEGIE.md`), ces étapes sont automatisées à chaque merge sur `main`.
+
 ## Exécution avec Docker (recommandé)
 
 ### Pourquoi la conteneurisation
 
-L'application est packagée avec Docker pour garantir un environnement d'exécution **identique** entre les postes de développement, l'intégration continue et la production -- évitant les écarts de version de Node.js ou de configuration système ("ça marche sur ma machine").
+L'application est packagée avec Docker pour garantir un environnement d'exécution **identique** entre les postes de développement, l'intégration continue et la production — évitant les écarts de version de Node.js ou de configuration système ("ça marche sur ma machine").
 
 ### Architecture Docker
 

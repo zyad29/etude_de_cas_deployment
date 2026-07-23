@@ -1,4 +1,4 @@
-# Guide de déploiement — Visiplus (Jaydee Kanban)
+# Guide de déploiement -- Visiplus (Jaydee Kanban)
 
 > Document complété au fil des étapes du projet.
 > Reste à ajouter : sécurisation (étape 6).
@@ -35,7 +35,7 @@ npm test
 ```
 Exécute l'ensemble des tests d'intégration (Vitest + Supertest) sur une instance MongoDB **en mémoire** (MongoDB Memory Server) : aucune base de données locale ou distante n'est nécessaire pour lancer les tests.
 
-Au tout premier lancement, le binaire MongoDB (~600 Mo) est téléchargé et mis en cache localement — ce qui peut prendre quelques minutes selon la connexion. Les lancements suivants réutilisent ce cache et sont rapides.
+Au tout premier lancement, le binaire MongoDB (~600 Mo) est téléchargé et mis en cache localement -- ce qui peut prendre quelques minutes selon la connexion. Les lancements suivants réutilisent ce cache et sont rapides.
 
 ```bash
 npm run test:coverage
@@ -64,7 +64,7 @@ En environnement avec pipeline CI/CD (voir `CI_CD_STRATEGIE.md`), ces étapes so
 
 ### Pourquoi la conteneurisation
 
-L'application est packagée avec Docker pour garantir un environnement d'exécution **identique** entre les postes de développement, l'intégration continue et la production — évitant les écarts de version de Node.js ou de configuration système ("ça marche sur ma machine").
+L'application est packagée avec Docker pour garantir un environnement d'exécution **identique** entre les postes de développement, l'intégration continue et la production -- évitant les écarts de version de Node.js ou de configuration système ("ça marche sur ma machine").
 
 ### Architecture Docker
 
@@ -125,4 +125,8 @@ Les secrets (`JWT_SECRET`, `MONGODB_URI` de production) sont gérés via les sec
 
 ## Sécurisation
 
-*À compléter à l'étape 6.*
+Deux middlewares de sécurité sont activés dans `src/app.ts` :
+- **`helmet()`** -- sécurise les en-têtes HTTP par défaut
+- **`express-rate-limit`** -- limite à 100 requêtes / 15 min par IP sur `/api/*`, protège notamment `POST /api/auth/login` contre le brute-force
+
+Détails, risques identifiés et limites : voir `NOTE_SECURITE.md`.

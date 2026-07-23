@@ -4,6 +4,8 @@ import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import routes from './routes/index.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 /**
  * Creates and configures the Express application.
@@ -22,6 +24,17 @@ import { errorHandler } from './middlewares/error.middleware.js';
  */
 export function createApp(): Express {
   const app = express();
+
+  // Sécurisation des en-têtes HTTP
+  app.use(helmet());
+
+  // Limitation du nombre de requêtes pour éviter les abus
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limite chaque IP à 100 requêtes par fenêtre (ici, par 15 minutes)
+    message: { error: 'Too many requests, please try again later' },
+  });
+  app.use('/api', limiter);
 
   // Middleware
   app.use(cors({ origin: env.CORS_ORIGIN }));
